@@ -50,6 +50,7 @@ class HtmlToJadeFromClipboardCommand(sublime_plugin.TextCommand):
 class HTJTools:
     @classmethod
     def post_html_return_jade(self, html):
+        html = html.strip()
         host = 'http://html2jade.aaron-powell.com/convert'
         data = {'html': html}
         data_json = json.dumps(data)
@@ -58,6 +59,9 @@ class HTJTools:
         result = json.loads(response_stream.read())
 
         if result["jade"]:
-            return result["jade"][len("html\\n  body\\n"):]
+            if html.startswith('<!DOCTYPE') or html.lower().startswith('<html>'):
+                return result["jade"]
+            else:
+                return result["jade"][len("html\\n  body\\n"):]
         else:
             return None
